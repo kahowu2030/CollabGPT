@@ -25,8 +25,9 @@ python collab_room.py
 - Set OpenAI Key
 ```bash
 export OPENAI_API_KEY=your-api-key
+# Alternatively, you can provide the API key when prompted by the script.
 ```
-Alternatively, you can provide the API key when prompted by the script.
+
 
 - Follow the prompts to set up your chat personas, their prompts, tasks, and the goal of the conversation.
 - Specify the number of rounds of conversation you would like to have, or enter -1 for infinite rounds.
