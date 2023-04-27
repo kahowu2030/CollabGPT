@@ -34,7 +34,7 @@ export OPENAI_API_KEY=your-api-key
   - At the end of the conversation, you can choose to continue the previous goal, start a new goal, or exit the program. If desired, you can also generate a summary of the conversation.
 
 ## Example
-```bash
+``` text
 Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just have a fun discussion just about anything! 
 
 Enter the number of personas: 5
