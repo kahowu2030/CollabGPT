@@ -22,17 +22,17 @@ python collab_room.py
 ```
 
 
-- Set OpenAI Key
+- Set OpenAI Key:
 ```bash
 export OPENAI_API_KEY=your-api-key
 # Alternatively, you can provide the API key when prompted by the script.
 ```
 
-
-- Follow the prompts to set up your chat personas, their prompts, tasks, and the goal of the conversation.
-- Specify the number of rounds of conversation you would like to have, or enter -1 for infinite rounds.
-- Watch the personas collaborate and generate conversations based on their tasks and the defined goal. 
-- At the end of the conversation, you can choose to continue the previous goal, start a new goal, or exit the program. If desired, you can also generate a summary of the conversation.
+- Here are the instructions: 
+  - Follow the prompts to set up your chat personas, their prompts, tasks, and the goal of the conversation.
+  - Specify the number of rounds of conversation you would like to have, or enter -1 for infinite rounds.
+  - Watch the personas collaborate and generate conversations based on their tasks and the defined goal. 
+  - At the end of the conversation, you can choose to continue the previous goal, start a new goal, or exit the program. If desired, you can also generate a summary of the conversation.
 
 ## License
 This project is licensed under the MIT License.
