@@ -38,19 +38,19 @@ def call_chatgpt_api(user_input, messages, role):
         messages.pop(1)
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.RateLimitError as e:
-        print ("[OPEN_AI] RateLimit exceeded")
+        print ("[OPEN_AI] RateLimit exceeded, retrying...")
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.APIConnectionError as e:
         # api connection exception
-        print ("[OPEN_AI] APIConnection failed")
+        print ("[OPEN_AI] APIConnection failed, retrying...")
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.Timeout as e:
         # timeout exception
-        print ("[OPEN_AI] Timeout")
+        print ("[OPEN_AI] Timeout, retrying...")
         return call_chatgpt_api(user_input, messages, role)
     except Exception as e:
         # other exception
-        print ("[OPEN_AI] Exception")
+        print ("[OPEN_AI] Exception, retrying...")
         return call_chatgpt_api(user_input, messages, role)
 
 # Read the basic prompt from the file
@@ -109,7 +109,7 @@ def main():
         role = "user"
         chatbots.append({"name": name, "prompt": prompt + basic_prompt, "role": role, "task": task})
 
-    chatbot_names = '&'.join([chatbot['name'] for chatbot in chatbots])
+    chatbot_names = '& '.join([chatbot['name'] for chatbot in chatbots])
     file_name = f"Interactions between {chatbot_names}"
 
     goal = input("The goal of this conversation is: ")
@@ -143,7 +143,7 @@ def main():
             print ("Continuing the discussion...\n")
             print (f"Round {round} of discussion...\n")
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Generate more contents and questions based on the previous conversations, go into deeper discussions. Use numbers and figures to support your inputs."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Generate more contents and questions based on the previous conversations, go into deeper discussions."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
@@ -196,7 +196,7 @@ def main():
 
 
 if __name__ == "__main__":
-    print("Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just have a fun discussion just about anything! \n")
+    print("Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just ask them have a fun discussion just about anything! \n")
     if not OPENAI_API_KEY:
         print("Your OPENAI_API_KEY is not set as an environment variable.")
         OPENAI_API_KEY = getpass("Please enter your OpenAI API key: ")
