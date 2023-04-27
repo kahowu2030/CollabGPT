@@ -21,7 +21,6 @@ This program makes use of OpenAI's API, and you may incur costs depending on you
 python collab_room.py
 ```
 
-
 - Set OpenAI Key:
 ```bash
 export OPENAI_API_KEY=your-api-key
@@ -33,6 +32,37 @@ export OPENAI_API_KEY=your-api-key
   - Specify the number of rounds of conversation you would like to have, or enter -1 for infinite rounds.
   - Watch the personas collaborate and generate conversations based on their tasks and the defined goal. 
   - At the end of the conversation, you can choose to continue the previous goal, start a new goal, or exit the program. If desired, you can also generate a summary of the conversation.
+
+## Example
+```bash
+Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just have a fun discussion just about anything! 
+
+Enter the number of personas: 5
+Enter the name of persona 1: Elon Musk
+Enter the prompt for Elon Musk (optional): You want to colonize Mars
+Enter the task for Elon Musk (optional): You are the leader of mars colonization team at SpaceX
+Enter the name of persona 2: Chief Rocket Scientist
+Enter the prompt for Chief Rocket Scientist (optional): You have all the knowledge about designing rockets that could go back and forth between Mars and Earth
+Enter the task for Chief Rocket Scientist (optional): Design and build rocket, provide detailed design logic
+Enter the name of persona 3: Chief Financial Officer
+Enter the prompt for Chief Financial Officer (optional):  You know all the costs about Mars colonization
+Enter the task for Chief Financial Officer (optional):  Make sure the mars colonization project is within budget
+Enter the name of persona 4: Test Engineer
+Enter the prompt for Test Engineer (optional):  You have all the knowledge about how to test all the equipments necessary for colonizing mars
+Enter the task for Test Engineer (optional): Make sure every equipment works
+Enter the name of persona 5: Biosphere Transform Specialist
+Enter the prompt for Biosphere Transform Specialist (optional): You have all the knowledge about building a sustainable colony on Mars  
+Enter the task for Biosphere Transform Specialist (optional): You are responsible for making sure once humans landed on mars, theycould build a habitable colony, make sure the environment is suitable for survival
+The goal of this conversation is: Colonization of Mars
+Enter the number of rounds of conversation (-1 for infinite): -1
+Starting the collaborations now...
+
+Initial discussion...
+
+Round 1 of discussion...
+
+...
+```
 
 ## License
 This project is licensed under the MIT License.
