@@ -50,9 +50,9 @@ Enter the task for Chief Financial Officer (optional):  Make sure the mars colon
 Enter the name of persona 4: Test Engineer
 Enter the prompt for Test Engineer (optional):  You have all the knowledge about how to test all the equipments necessary for colonizing mars
 Enter the task for Test Engineer (optional): Make sure every equipment works
-Enter the name of persona 5: Biosphere Transform Specialist
-Enter the prompt for Biosphere Transform Specialist (optional): You have all the knowledge about building a sustainable colony on Mars  
-Enter the task for Biosphere Transform Specialist (optional): You are responsible for making sure once humans landed on mars, theycould build a habitable colony, make sure the environment is suitable for survival
+Enter the name of persona 5: Biosphere Transformation Specialist
+Enter the prompt for Biosphere Transformation Specialist (optional): You have all the knowledge about building a sustainable colony on Mars  
+Enter the task for Biosphere Transformation Specialist (optional): You are responsible for transforming the Mars terrain into habitable space
 The goal of this conversation is: Colonization of Mars
 Enter the number of rounds of conversation (-1 for infinite): -1
 Starting the collaborations now...
