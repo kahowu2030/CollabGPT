@@ -2,6 +2,7 @@ import os
 from getpass import getpass
 import openai
 import tiktoken
+import time
 
 MAX_TOKENS = 4096
 MODEL = "gpt-3.5-turbo"
@@ -38,7 +39,9 @@ def call_chatgpt_api(user_input, messages, role):
         messages.pop(1)
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.RateLimitError as e:
+        # messages.pop(1)
         print ("[OPEN_AI] RateLimit exceeded, retrying...")
+        time.sleep(30)
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.APIConnectionError as e:
         # api connection exception
@@ -78,7 +81,7 @@ def generate_summary(file_path, chunk_size=3000, max_tokens=1500):
     for chunk in text_chunks:
         response = openai.Completion.create(
             engine="text-davinci-002",
-            prompt=f"Please summarize the following text:\n\n{chunk}\n include opinions from each speaker.",
+            prompt=f"Please summarize the following text:\n\n{chunk}\n include opinions from each speaker. List the key opinions out.",
             temperature=0,
             max_tokens=max_tokens,
             top_p=1,
@@ -125,7 +128,7 @@ def main():
     with open(output_path, "w") as file:
         file.write(f"The goal of this conversation is: {goal} \n\n")
 
-    conversation_history = [{"role": "system", "content": f"All of you are working together on {goal}"}]
+    conversation_history = [{"role": "system", "content": f"All of you are working together to accomplish {goal}"}]
     # Enter the number of rounds of conversation, by default it is infinite
     num_rounds = int(input("Enter the number of rounds of conversation (-1 for infinite): "))
     round = 1
@@ -148,7 +151,7 @@ def main():
             print ("Continuing the discussion...\n")
             print (f"Round {round} of discussion...\n")
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Generate more contents and questions based on the previous conversations, go into deeper discussions."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Generate more contents and questions based on the previous conversations, go into deeper discussions. Use numbers and figures to support your inputs and responses."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
