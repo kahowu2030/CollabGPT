@@ -94,7 +94,12 @@ def generate_summary(file_path, chunk_size=3000, max_tokens=1500):
 
 # Allow multiple chatbots to have a conversation with each other
 def main():
-    num_chatbots = int(input("Enter the number of personas: "))
+    while True:
+        try:
+            num_chatbots = int(input("Enter the number of personas: "))
+            break
+        except ValueError:
+            print("Invalid input. Please enter a valid integer for the number of personas.")
     chatbots = []
     basic_prompt = read_basic_prompt()
     output_folder_path = "outputs/"
