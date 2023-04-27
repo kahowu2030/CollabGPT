@@ -33,5 +33,5 @@ Alternatively, you can provide the API key when prompted by the script.
 - Watch the personas collaborate and generate conversations based on their tasks and the defined goal. 
 - At the end of the conversation, you can choose to continue the previous goal, start a new goal, or exit the program. If desired, you can also generate a summary of the conversation.
 
-License
+## License
 This project is licensed under the MIT License.
