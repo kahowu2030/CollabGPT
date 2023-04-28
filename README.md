@@ -18,7 +18,7 @@ This program makes use of OpenAI's API, and you may incur costs depending on you
 ## Usage
 - Run the python file as follow:
 ```bash
-python collab_room.py
+python collab_gpt.py
 ```
 
 - Set OpenAI Key:
