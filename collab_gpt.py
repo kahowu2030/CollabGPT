@@ -3,9 +3,6 @@ from getpass import getpass
 import openai
 import tiktoken
 import time
-# import concurrent.futures
-# from functools import partial
-# from transformers import pipeline
 
 MAX_TOKENS = 4096
 MODEL = "gpt-3.5-turbo"
@@ -21,6 +18,10 @@ def count_tokens(input_text):
 def conversation_to_text_file(line, output_file):
     with open(output_file, "a") as file: 
         file.write(line)
+
+# Summerize all the conversations in the text file, yet to be implemented
+# def summarize_text(output_path):
+#     return
 
 # Call the OpenAI API to generate a response to the user's input
 def call_chatgpt_api(user_input, messages, role):
@@ -89,29 +90,14 @@ def remove_first_sentence(text):
     # If no period is found, return the original text
     return text
 
-# def summarize_text(file_path, model_name='t5-large'):
-#     with open(file_path, 'r') as file:
-#         text = file.read()
-
-#     summarizer = pipeline('summarization', model=model_name, tokenizer=model_name, device=0) # device=0 if you have a GPU, device=-1 for CPU
-
-#     # Depending on the model's token limit, you might need to split the text into smaller chunks
-#     text_chunks = [text[i:i+1024] for i in range(0, len(text), 1024)]
-
-#     summary = []
-#     for chunk in text_chunks:
-#         chunk_summary = summarizer(chunk, min_length=25, max_length=100)
-#         summary.append(chunk_summary[0]['summary_text'])
-
-#     return ' '.join(summary)
-
 # Allow multiple chatbots to have a conversation with each other
 def main():
     # while True:
         # Ask if the user want to load template or not
     output_folder_path = "outputs/"
     load_template = input("Do you want to load personas template? (y/n): ").upper()
-    if load_template == "n":
+    print ("\n")
+    if load_template == "N":
         while True:
             try:
                 num_chatbots = int(input("Enter the number of personas: "))
@@ -127,22 +113,30 @@ def main():
                 if not name.strip():
                     print("Name cannot be blank. Please enter a valid name.")
             prompt = input(f"Enter the prompt for {name} (optional): ")
+            # if there is no period in prompt, add the period to the end of the prompt
+            if prompt and prompt[-1] != ".":
+                prompt += "."
             task = input(f"Enter the task for {name} (optional): ")
+            # if there is no period in task, add the period to the end of the task
+            if task and task[-1] != ".":
+                task += "."
             role = "user"
             chatbots.append({"name": name, "prompt": prompt + basic_prompt, "role": role, "task": task})
+        # save the chatbots as a string to a file
+        with open("template.txt", 'w') as file:
+            file.write(str(chatbots))
     else:
         with open("template.txt", 'r') as file:
             # Read the contents of the file
             file_contents = file.read()
             # Convert the contents to a Python list using eval()
             chatbots = eval(file_contents)
+            # print the chatbots list line by line
+            for chatbot in chatbots:
+                print("Loaded Persona: " + str(chatbot) + "\n")
 
-            # Print the loaded list
-            
-    print(chatbots)
-
-    chatbot_names = '& '.join([chatbot['name'] for chatbot in chatbots])
-    file_name = f"Interactions between {chatbot_names}"
+    # Ask the user to input a file name
+    file_name = input("Enter a file name to save the discussions: ")
 
     goal = input("The goal of this conversation is: ")
     output_file = file_name + ".txt"
@@ -156,14 +150,14 @@ def main():
     # Enter the number of rounds of conversation, by default it is infinite
     num_rounds = int(input("Enter the number of rounds of conversation (-1 for infinite): "))
     round = 1
-    print ("Starting the collaborations now...\n")
+    print ("Starting the discussions now...\n")
 
     while True:
         if round == 1:
             print ("Initial discussion...\n") 
             print (f"Round {round} of discussion...\n")               
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for {chatbot['task']}. Accomplish this {goal}."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']} You are responsible for {chatbot['task']} Accomplish this {goal}."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
@@ -175,7 +169,7 @@ def main():
             print ("Continuing the discussion...\n")
             print (f"Round {round} of discussion...\n")
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for {chatbot['task']}. Generate more contents on previous contexts, go into deeper discussions about the previous contexts. Criticize the other users about their opinions if you don't agree, don't be easily agreeable. Stop saying thank you. Don't repeat yourself. Ask others question based on previous contexts. Use number and statistics to support your claims."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for {chatbot['task']} Generate more contents on previous contexts, go into deeper discussions about the previous contexts. Criticize the other users about their opinions if you don't agree, don't be easily agreeable. Stop saying thank you. Don't repeat yourself. Ask others question based on previous contexts. Use number and statistics to support your claims."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
@@ -205,19 +199,22 @@ def main():
                     goal = input("What is the new goal? ")
                     conversation_history = [{"role": "system", "content": f"All of you are working together on {goal}"}]
                     # Enter the number of rounds of conversation, by default it is infinite
+                    with open(output_path, "a") as file:
+                        file.write(f"The goal of this conversation is: {goal} \n\n")
                     num_rounds = int(input("Enter the number of rounds of conversation (-1 for infinite): "))
                     round = 1
                     continue
             elif next_action == 'E':
-                # # Ask the user if they want to summearize the conversation:
-                # summarize = input("Do you want to summarize the conversation? (Y/N): ").upper()
-                # if summarize == 'Y':
-                #     # Summarize the conversation
-                #     summary = summarize_text(output_path)
-                #     print (f"Summary of the conversation: \n{summary}")
-                #     # Write the summary to the output file
-                #     with open(output_folder_path + file_name + "_summary.txt", "w") as file:
-                #         file.write(summary)
+                # Ask the user if they want to summearize the conversation:
+                summarize = input("Do you want to summarize the conversation? (Y/N): ").upper()
+                if summarize == 'Y':
+                    print ("Yet to be implemented...")
+                    # # Summarize the conversation
+                    # summary = summarize_text(output_path)
+                    # print (f"Summary of the conversation: \n{summary}")
+                    # # Write the summary to the output file
+                    # with open(output_folder_path + file_name + "_summary.txt", "w") as file:
+                    #     file.write(summary)
                 break
             else:
                 print("Invalid input. Please try again.")
@@ -228,7 +225,7 @@ def main():
 
 
 if __name__ == "__main__":
-    print("Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just ask them have a fun discussion just about anything! \n")
+    print("\nWelcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just ask them to have a fun discussion about a given topic! \n")
     if not OPENAI_API_KEY:
         print("Your OPENAI_API_KEY is not set as an environment variable.")
         OPENAI_API_KEY = getpass("Please enter your OpenAI API key: ")
