@@ -33,7 +33,7 @@ def call_chatgpt_api(user_input, messages, role):
         )
         content = response.choices[0].message.content.strip()
         total_tokens = response['usage']['total_tokens']
-        print("Total tokens used: ", total_tokens)
+        # print("Total tokens used: ", total_tokens)
         if total_tokens >= MAX_TOKENS:
             # remove the third message
             # print ("Removing the second message... \n")
@@ -90,12 +90,7 @@ def remove_first_sentence(text):
     # If no period is found, return the original text
     return text
 
-# Allow multiple chatbots to have a conversation with each other
-def main():
-    # while True:
-        # Ask if the user want to load template or not
-    output_folder_path = "outputs/"
-    language = input("Enter the language of for the following discussion English/Chinese): ").lower()
+def create_chatbots (language):
     load_template = input("Do you want to load previous personas template? (y/n): ").upper()
     print ("\n")
     if load_template == "N":
@@ -135,29 +130,74 @@ def main():
             # print the chatbots list line by line
             for chatbot in chatbots:
                 print("Loaded Persona: " + str(chatbot) + "\n")
+    return chatbots
+
+                    # # Summarize the conversation
+                    # summary = summarize_text(output_path)
+                    # print (f"Summary of the conversation: \n{summary}")
+                    # # Write the summary to the output file
+                    # with open(output_folder_path + file_name + "_summary.txt", "w") as file:
+                    #     file.write(summary)
+
+# Take current_round_discussion and summerize it
+def summerize_discussion (round, current_round_discussion, output_folder_path, file_name):
+    # Concatenate all the messages in current_round_discussion
+    discussion = ""
+    for message in current_round_discussion:
+        print (message)
+        discussion += message
+    current_summary = generate_summary (discussion)
+    # Write the summary to the output file
+    if round == 1:
+        with open(output_folder_path + file_name + "_summary.txt", "w") as file:
+            file.write(current_summary)
+    else: 
+        with open(output_folder_path + file_name + "_summary.txt", "a") as file:
+            file.write(current_summary)
+    return current_summary + "\n"
+
+def generate_summary(text):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=(f"Please summarize the following text:\n{text}\n\n according to the speakers and their opinions in a list of bullet points."),
+        temperature=0.5,
+        max_tokens=1024,
+        n = 1,
+        stop=None
+    )
+    summary = response.choices[0].text.strip()
+    return summary
+
+# Allow multiple chatbots to have a conversation with each other
+def main():
+    # while True:
+        # Ask if the user want to load template or not
+    output_folder_path = "outputs/"
+    language = input("Enter the language of for the following discussion English/Chinese): ").lower()
+    chatbots = create_chatbots(language)
 
     # Ask the user to input a file name
     file_name = input("Enter a file name to save the discussions: ")
-
-    goal = input("The goal of this discussion is: ")
     output_file = file_name + ".txt"
     # output file is stored in the folder output, open and write the goal of the conversation
     output_path = output_folder_path + output_file
+    goal = input("The goal of this discussion is: ")
     # Create a new file named output_path
     with open(output_path, "w") as file:
         file.write(f"The goal of this discussion is: {goal} \n\n")
 
-
     conversation_history = [{"role": "system", "content": f"All of you are trying to accomplish this {goal}"}]
+    current_round_conversation = [] 
     # Enter the number of rounds of conversation, by default it is infinite
     num_rounds = int(input("Enter the number of rounds of conversation (-1 for infinite): "))
     round = 1
     print ("Starting the discussions now...\n")
 
     while True:
+        current_round_conversation = [] 
         if round == 1:
-            print ("Initial discussion...\n") 
-            print (f"Round {round} of discussion...\n")               
+            print (f"Round {round} of discussion...\n\n")    
+            conversation_to_text_file (f"Round {round} of discussion...\n", output_path)           
             for chatbot in chatbots:
                 # English version of the prompt
                 if language == "english":
@@ -167,13 +207,18 @@ def main():
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
+                current_round_conversation.append(line)
                 conversation_to_text_file (line, output_path)
                 print(f"{chatbot['name']}: \n{response}\n")
                 print ("\n")
+            # Summarize the current round of discussion
+            # print ("Summarizing the current round of discussion...\n")
+            # current_summary = summerize_discussion (round, current_round_conversation, output_folder_path, file_name)
+            # print (f"Summary of the conversation: \n{current_summary}")
         # If the round is greater than 1, then the chatbots will continue the conversation
         elif (round > 1 and round <= num_rounds) or num_rounds == -1:
-            print ("Continuing the discussion...\n")
-            print (f"Round {round} of discussion...\n")
+            print (f"Round {round} of discussion...\n\n")
+            conversation_to_text_file (f"Round {round} of discussion...\n", output_path)  
             # if round is equal to num_rounds, then the chatbots will end the discussion and summerize their views. 
             if round == num_rounds and num_rounds != -1:
                 print ("Ending the discussion...\n")
@@ -185,6 +230,7 @@ def main():
                     response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                     conversation_history.append({"role": chatbot['role'], "content": response})
                     line = f"{chatbot['name']}: \n" + response + "\n\n"
+                    current_round_conversation.append(line)
                     conversation_to_text_file (line, output_path)
                     print(f"{chatbot['name']}: \n{response}\n")
                     print ("\n")
@@ -197,9 +243,14 @@ def main():
                     response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                     conversation_history.append({"role": chatbot['role'], "content": response})
                     line = f"{chatbot['name']}: \n" + response + "\n\n"
+                    current_round_conversation.append(line)
                     conversation_to_text_file (line, output_path)
                     print(f"{chatbot['name']}: \n{response}\n")
                     print ("\n")
+            # Summarize the current round of discussion
+            # print ("Summarizing the current round of discussion...\n")
+            # current_summary = summerize_discussion (round, current_round_conversation, output_folder_path, file_name)
+            # print (f"Summary of the conversation: \n{current_summary}")
         # Reach the max number of rounds
         elif round > num_rounds and num_rounds != -1:
             # Ask the user for the next action
