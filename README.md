@@ -64,6 +64,11 @@ Round 1 of discussion...
 # Check out outputs folder for more examples output
 ...
 ```
+## Todo list
+1. Add more conversation memory
+2. Enable data uploads for each persona for further customization
+3. Summerization of discussions
+4. Use CollabGPT to solve actual problem, and use multiple expert agents to synthesize new ideas
 
 ## License
 This project is licensed under the MIT License.
