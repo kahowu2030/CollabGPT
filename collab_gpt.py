@@ -33,7 +33,7 @@ def call_chatgpt_api(user_input, messages, role):
         )
         content = response.choices[0].message.content.strip()
         total_tokens = response['usage']['total_tokens']
-        # print("Total tokens used: ", total_tokens)
+        print("Total tokens used: ", total_tokens)
         if total_tokens >= MAX_TOKENS:
             # remove the third message
             # print ("Removing the second message... \n")
@@ -175,20 +175,20 @@ def main():
             print ("Continuing the discussion...\n")
             print (f"Round {round} of discussion...\n")
             # if round is equal to num_rounds, then the chatbots will end the discussion and summerize their views. 
-            if round == num_rounds:
+            if round == num_rounds and num_rounds != -1:
                 print ("Ending the discussion...\n")
                 for chatbot in chatbots:
                     if language == "english":
                         full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. Base on previous contexts, summerize your views and you opinions on other users' views."
                     elif language == "chinese":
-                        full_prompt = f"你的名字是 {chatbot['name']}. {chatbot['prompt']}. 基于之前的上下文，总结你的观点和总结你对其他用户观点的看法."
+                        full_prompt = f"你的名字是 {chatbot['name']}. {chatbot['prompt']}. 基于之前的上下文，总结你的观点和总结你对其他用户观点的看法"
                     response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                     conversation_history.append({"role": chatbot['role'], "content": response})
                     line = f"{chatbot['name']}: \n" + response + "\n\n"
                     conversation_to_text_file (line, output_path)
                     print(f"{chatbot['name']}: \n{response}\n")
                     print ("\n")
-            elif round < num_rounds:
+            elif round < num_rounds or num_rounds == -1:
                 for chatbot in chatbots:
                     if language == "english":
                         full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for {chatbot['task']} Generate more contents on previous contexts, go into deeper discussions about the previous contexts. Criticize the other users about their opinions if you don't agree, don't be easily agreeable. Stop saying thank you. Don't repeat yourself. Ask others question based on previous contexts. Use number and statistics to support your claims."
