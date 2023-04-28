@@ -1,12 +1,12 @@
 
-# Collab Room
-Collab Room is a Python program that allows you to create multiple intelligent chat personas using OpenAI's GPT-3.5-turbo model to work together to accomplish a certain goal or have a fun discussion about anything!
+# CollabGPT
+CollabGPT is a Python program that allows you to create multiple expert agents using OpenAI's GPT-3.5-turbo model to work together to accomplish a certain goal or have a fun discussion about anything!
 
 ## Features
 - Generate multiple intelligent chat personas using OpenAI's GPT-3.5-turbo model and let them work together to accomplish a defined goal.
 - Set custom prompts and tasks for each persona.
 - Save all the generated inputs to a text file in the outputs folder.
-- Generate a summary of all the inputs using OpenAI's text-davinci-002 model.
+- Generate a summary of all the inputs using OpenAI's text-davinci-002 model (yet to be implemented).
 
 ## Note
 This program makes use of OpenAI's API, and you may incur costs depending on your usage. Please be aware of the token limits and the API rate limits to avoid unexpected costs.
@@ -18,7 +18,7 @@ This program makes use of OpenAI's API, and you may incur costs depending on you
 ## Usage
 - Run the python file as follow:
 ```bash
-python collab_room.py
+python collab_gpt.py
 ```
 
 - Set OpenAI Key:
@@ -35,7 +35,7 @@ export OPENAI_API_KEY=your-api-key
 
 ## Example
 ``` text
-Welcome to the Collab Room! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just have a fun discussion just about anything! 
+Welcome to the CollabGPT! Here you could create multiple intelligent chat personas to work together to accomplish a certain goal, or just have a fun discussion just about anything! 
 
 Enter the number of personas: 5
 Enter the name of persona 1: Elon Musk
