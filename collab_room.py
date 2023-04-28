@@ -3,6 +3,9 @@ from getpass import getpass
 import openai
 import tiktoken
 import time
+import concurrent.futures
+from functools import partial
+# from transformers import pipeline
 
 MAX_TOKENS = 4096
 MODEL = "gpt-3.5-turbo"
@@ -29,19 +32,28 @@ def call_chatgpt_api(user_input, messages, role):
         )
         content = response.choices[0].message.content.strip()
         total_tokens = response['usage']['total_tokens']
+        print("Total tokens used: ", total_tokens)
         if total_tokens >= MAX_TOKENS:
-            messages.pop(1)
+            # remove the third message
+            print ("Removing the second message... \n")
+            messages.pop(3)
+            messages.pop(3)
+            # print (messages)
             return call_chatgpt_api(user_input, messages, role)
         elif content:
+            # return remove_first_sentence (content)
             return content
     except openai.error.InvalidRequestError as e:
         # print("Error: Number of tokens exceeded the limit. Truncating the discussions now...")
-        messages.pop(1)
+        messages.pop(3)
+        messages.pop(3)
+        # print (messages)
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.RateLimitError as e:
         # messages.pop(1)
+        # messages.pop(1)
         print ("[OPEN_AI] RateLimit exceeded, retrying...")
-        time.sleep(30)
+        time.sleep(2)
         return call_chatgpt_api(user_input, messages, role)
     except openai.error.APIConnectionError as e:
         # api connection exception
@@ -68,32 +80,30 @@ def read_basic_prompt():
     # Return the combined string
     return combined_lines
 
-def generate_summary(file_path, chunk_size=3000, max_tokens=1500):
-    # Read the text from the file
-    with open(file_path, 'r') as file:
-        text = file.read().replace('\n', ' ')
+def remove_first_sentence(text):
+    # Find the index of the first period
+    period_index = text.find('.')
+    # If a period is found, return the text after the first period
+    if period_index != -1:
+        return text[period_index + 1:].strip()
+    # If no period is found, return the original text
+    return text
 
-    # Split the text into smaller chunks
-    text_chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+# def summarize_text(file_path, model_name='t5-large'):
+#     with open(file_path, 'r') as file:
+#         text = file.read()
 
-    # Summarize each chunk and combine the summaries
-    summaries = []
-    for chunk in text_chunks:
-        response = openai.Completion.create(
-            engine="text-davinci-002",
-            prompt=f"Please summarize the following text:\n\n{chunk}\n include opinions from each speaker. List the key opinions out.",
-            temperature=0,
-            max_tokens=max_tokens,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
+#     summarizer = pipeline('summarization', model=model_name, tokenizer=model_name, device=0) # device=0 if you have a GPU, device=-1 for CPU
 
-        summary = response.choices[0].text.strip()
-        summaries.append(summary)
+#     # Depending on the model's token limit, you might need to split the text into smaller chunks
+#     text_chunks = [text[i:i+1024] for i in range(0, len(text), 1024)]
 
-    full_summary = ' '.join(summaries)
-    return full_summary
+#     summary = []
+#     for chunk in text_chunks:
+#         chunk_summary = summarizer(chunk, min_length=25, max_length=100)
+#         summary.append(chunk_summary[0]['summary_text'])
+
+#     return ' '.join(summary)
 
 # Allow multiple chatbots to have a conversation with each other
 def main():
@@ -128,7 +138,7 @@ def main():
     with open(output_path, "w") as file:
         file.write(f"The goal of this conversation is: {goal} \n\n")
 
-    conversation_history = [{"role": "system", "content": f"All of you are working together to accomplish {goal}"}]
+    conversation_history = [{"role": "system", "content": f"All of you are trying to accomplish this {goal}"}]
     # Enter the number of rounds of conversation, by default it is infinite
     num_rounds = int(input("Enter the number of rounds of conversation (-1 for infinite): "))
     round = 1
@@ -139,7 +149,7 @@ def main():
             print ("Initial discussion...\n") 
             print (f"Round {round} of discussion...\n")               
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Accomplish this {goal} with other users."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for {chatbot['task']}. Accomplish this {goal}."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
@@ -151,7 +161,7 @@ def main():
             print ("Continuing the discussion...\n")
             print (f"Round {round} of discussion...\n")
             for chatbot in chatbots:
-                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for this {chatbot['task']}. Generate more contents and questions based on the previous conversations, go into deeper discussions. Use numbers and figures to support your inputs and responses."
+                full_prompt = f"Your name is {chatbot['name']}. {chatbot['prompt']}. You are responsible for  {chatbot['task']}. Generate more contents and questions depending on previous contexts, go into deeper discussions about the previous contexts. Criticize the other users about their opinions if you don't agree, don't be easily agreeable. Stop saying thank you. Don't repeat yourself."
                 response = call_chatgpt_api(full_prompt, conversation_history, chatbot['role'])
                 conversation_history.append({"role": chatbot['role'], "content": response})
                 line = f"{chatbot['name']}: \n" + response + "\n\n"
@@ -185,15 +195,15 @@ def main():
                     round = 1
                     continue
             elif next_action == 'E':
-                # Ask the user if they want to summearize the conversation:
-                summarize = input("Do you want to summarize the conversation? (Y/N): ").upper()
-                if summarize == 'Y':
-                    # Summarize the conversation
-                    summary = generate_summary(output_path)
-                    print (f"Summary of the conversation: \n{summary}")
-                    # Write the summary to the output file
-                    with open(output_folder_path + file_name + "_summary.txt", "w") as file:
-                        file.write(summary)
+                # # Ask the user if they want to summearize the conversation:
+                # summarize = input("Do you want to summarize the conversation? (Y/N): ").upper()
+                # if summarize == 'Y':
+                #     # Summarize the conversation
+                #     summary = summarize_text(output_path)
+                #     print (f"Summary of the conversation: \n{summary}")
+                #     # Write the summary to the output file
+                #     with open(output_folder_path + file_name + "_summary.txt", "w") as file:
+                #         file.write(summary)
                 break
             else:
                 print("Invalid input. Please try again.")
