@@ -6,7 +6,7 @@ CollabGPT is a Python program that allows you to create multiple expert agents u
 - Generate multiple intelligent chat personas using OpenAI's GPT-3.5-turbo model and let them work together to accomplish a defined goal.
 - Set custom prompts and tasks for each persona.
 - Save all the generated inputs to a text file in the outputs folder.
-- Generate a summary of all the inputs using OpenAI's text-davinci-002 model.
+- Generate a summary of all the inputs using OpenAI's text-davinci-002 model (yet to be implemented).
 
 ## Note
 This program makes use of OpenAI's API, and you may incur costs depending on your usage. Please be aware of the token limits and the API rate limits to avoid unexpected costs.
