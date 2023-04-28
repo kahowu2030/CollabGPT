@@ -1,6 +1,6 @@
 
 # CollabGPT
-CollabGPT is a Python program that allows you to create multiple expert agents using OpenAI's GPT-3.5-turbo model to work together to accomplish a certain goal or have a fun discussion about anything!
+CollabGPT is a Python program that allows you to create multiple expert agents using OpenAI's LLM model to work together to accomplish a certain goal or have a fun discussion about anything!
 
 ## Features
 - Generate multiple intelligent chat personas using OpenAI's GPT-3.5-turbo model and let them work together to accomplish a defined goal.
@@ -64,6 +64,11 @@ Round 1 of discussion...
 # Check out outputs folder for more examples output
 ...
 ```
+## Todo list
+1. Add more conversation memory
+2. Enable data uploads for each persona for further customization
+3. Summerization of discussions
+4. Use CollabGPT to solve actual problem, and use multiple expert agents to synthesize new ideas
 
 ## License
 This project is licensed under the MIT License.
