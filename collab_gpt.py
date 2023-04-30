@@ -19,10 +19,6 @@ def conversation_to_text_file(line, output_file):
     with open(output_file, "a") as file: 
         file.write(line)
 
-# Summerize all the conversations in the text file, yet to be implemented
-# def summarize_text(output_path):
-#     return
-
 # Call the OpenAI API to generate a response to the user's input
 def call_chatgpt_api(user_input, messages, role):
     messages.append({"role": role, "content": user_input})
@@ -131,13 +127,6 @@ def create_chatbots (language):
             for chatbot in chatbots:
                 print("Loaded Persona: " + str(chatbot) + "\n")
     return chatbots
-
-                    # # Summarize the conversation
-                    # summary = summarize_text(output_path)
-                    # print (f"Summary of the conversation: \n{summary}")
-                    # # Write the summary to the output file
-                    # with open(output_folder_path + file_name + "_summary.txt", "w") as file:
-                    #     file.write(summary)
 
 # Take current_round_discussion and summerize it
 def summerize_discussion (round, current_round_discussion, output_folder_path, file_name):
